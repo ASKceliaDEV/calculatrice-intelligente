@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>CALCULATRICE</title>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===== PARTIE GAUCHE : calculatrice ===== -->
+    <div class="calc-side">
+
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <button class="hamburger">☰</button>
+            <a href="#" class="nav-item">Standard</a>
+            <a href="#" class="nav-item active">Scientific</a>
+            <a href="#" class="nav-item">Graph</a>
+            <a href="#" class="nav-item">Programmer</a>
+            <a href="#" class="nav-item">Converter</a>
+            <button class="dark-toggle">🌙</button>
+        </nav>
+
+        <!-- DISPLAY -->
+        <div class="display-wrapper">
+            <div class="expression" id="expression"></div>
+            <input type="text" id="display" readonly placeholder="0">
+        </div>
+
+        <!-- FILTRES -->
+        <div class="filters">
+            <div class="filter-dropdown">
+                <span>⊞ Trigonometry</span> <span>▾</span>
+            </div>
+            <div class="filter-dropdown">
+                <span>⊞ Probability</span> <span>▾</span>
+            </div>
+            <div class="filter-dropdown">
+                <span>∫ Calculus</span> <span>▾</span>
+            </div>
+            <button class="code-btn">‹›</button>
+        </div>
+
+        <!-- GRILLE DE BOUTONS -->
+        <div class="btn">
+
+            <!-- ligne 1 -->
+            <button class="btn-mem">2nd</button>
+            <button class="btn-mem">mr</button>
+            <button class="btn-mem">m+</button>
+            <button class="btn-mem">mc</button>
+            <button class="btn-const">e</button>
+            <button class="btn-clear-ce">CE</button>
+            <button class="btn-clear">C</button>
+            <button class="btn-clear">⌫</button>
+
+            <!-- ligne 2 -->
+            <button class="btn-sci">sin</button>
+            <button class="btn-sci">cos</button>
+            <button class="btn-sci">tan</button>
+            <button class="btn-sci">cot</button>
+            <button class="btn-paren">(</button>
+            <button class="btn-paren">)</button>
+            <button class="btn-op">%</button>
+            <button class="btn-op">÷</button>
+
+            <!-- ligne 3 -->
+            <button class="btn-sci">sec</button>
+            <button class="btn-sci">csc</button>
+            <button class="btn-num">7</button>
+            <button class="btn-num">8</button>
+            <button class="btn-num">9</button>
+            <button class="btn-op">×</button>
+
+            <!-- ligne 4 -->
+            <button class="btn-sci">x²</button>
+            <button class="btn-sci">x³</button>
+            <button class="btn-sci">xʸ</button>
+            <button class="btn-sci">eˣ</button>
+            <button class="btn-num">4</button>
+            <button class="btn-num">5</button>
+            <button class="btn-num">6</button>
+            <button class="btn-op">−</button>
+
+            <!-- ligne 5 -->
+            <button class="btn-sci">10ˣ</button>
+            <button class="btn-sci">ln</button>
+            <button class="btn-sci">2ˣ</button>
+            <button class="btn-sci">|x|</button>
+            <button class="btn-num">1</button>
+            <button class="btn-num">2</button>
+            <button class="btn-num">3</button>
+            <button class="btn-op">+</button>
+
+            <!-- ligne 6 -->
+            <button class="btn-sci">Deg</button>
+            <button class="btn-sci">logₓ</button>
+            <button class="btn-sci">log꜀x</button>
+            <button class="btn-sci">x!</button>
+            <button class="btn-op">±</button>
+            <button class="btn-num">0</button>
+            <button class="btn-num">.</button>
+            <button class="btn-equal">=</button>
+
+        </div>
+    </div>
+
+    <!-- ===== PARTIE DROITE : historique ===== -->
+    <aside class="sidebar-right">
+
+        <!-- tabs -->
+        <div class="history-tabs">
+            <button class="tab active">History</button>
+            <button class="tab">Archive</button>
+            <button class="tab-icon">💾</button>
+        </div>
+
+        <!-- liste des calculs -->
+        <div class="history-list" id="historyList">
+
+            <!-- chaque entrée ressemble à ça : -->
+            <div class="history-item">
+                <div class="history-expression">(256 + 123) × (845÷25) =</div>
+                <div class="history-result">12,810.2</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-expression">sin(4 * 256) + (π * (ln(1)) =</div>
+                <div class="history-result">−0.82903757256</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-expression">(256 + 123) × 6 =</div>
+                <div class="history-result">2,274</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-expression">tan(45) + cos(90) =</div>
+                <div class="history-result">1</div>
+            </div>
+
+        </div>
+
+        <!-- footer historique -->
+        <div class="history-footer">
+            <span>Save History</span>
+            <button>🖨️</button>
+            <button>📤</button>
+            <button>🗑️</button>
+        </div>
+
+    </aside>
+
+</div>
+
+<script src="javascript.js"></script>
+</body>
+</html>
