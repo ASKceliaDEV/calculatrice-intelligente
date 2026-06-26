@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <!--    je vais ajouter link css -->
+    <!--link rel="stylesheet" href="style.css"-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>CALCULATRICE</title>
 </head>
 <body>
@@ -17,8 +19,8 @@
         <nav class="navbar">
             <button class="hamburger">☰</button>
             <a href="#" class="nav-item">Standard</a>
-            <a href="#" class="nav-item active">Scientific</a>
-            <a href="#" class="nav-item">Graph</a>
+            <a href="/templates/index.html" class="nav-item active">Scientific</a>
+            <a href="/templates/graph.html" class="nav-item">Graph</a>
             <a href="#" class="nav-item">Programmer</a>
             <a href="#" class="nav-item">Converter</a>
             <button class="dark-toggle">🌙</button>
@@ -28,6 +30,11 @@
         <div class="display-wrapper">
             <div class="expression" id="expression"></div>
             <input type="text" id="display" readonly placeholder="0">
+        </div>
+
+        <!--MODE-->
+        <div class="mode" id="mode">
+            <span id="modeText">Deg</span>
         </div>
 
         <!-- FILTRES -->
@@ -70,10 +77,12 @@
             <!-- ligne 3 -->
             <button class="btn-sci">sec</button>
             <button class="btn-sci">csc</button>
+            <button class="btn-sci">7</button>
+            <button class="btn-sci">7</button>
             <button class="btn-num">7</button>
             <button class="btn-num">8</button>
             <button class="btn-num">9</button>
-            <button class="btn-op">×</button>
+            <button class="btn-op">*</button>
 
             <!-- ligne 4 -->
             <button class="btn-sci">x²</button>
@@ -96,7 +105,7 @@
             <button class="btn-op">+</button>
 
             <!-- ligne 6 -->
-            <button class="btn-sci">Deg</button>
+            <button class="btn-sci">Deg/Rad</button>
             <button class="btn-sci">logₓ</button>
             <button class="btn-sci">log꜀x</button>
             <button class="btn-sci">x!</button>
@@ -155,7 +164,7 @@
     </aside>
 
 </div>
-
-<script src="javascript.js"></script>
+<!--ajouter le javascrit relie avec flask-->
+<script src="{{ url_for('static', filename='javascript.js') }}"></script>
 </body>
 </html>
