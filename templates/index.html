@@ -18,11 +18,17 @@
         <!-- NAVBAR -->
         <nav class="navbar">
             <button class="hamburger">☰</button>
+        
             <a href="#" class="nav-item">Standard</a>
-            <a href="/templates/index.html" class="nav-item active">Scientific</a>
-            <a href="/templates/graph.html" class="nav-item">Graph</a>
-            <a href="/templates/programmer.html" class="nav-item">Programmer</a>
+        
+            <a href="{{ url_for('home') }}" class="nav-item active">Scientific</a>
+        
+            <a href="{{ url_for('graph') }}" class="nav-item">Graph</a>
+        
+            <a href="{{ url_for('programmer') }}" class="nav-item">Programmer</a>
+        
             <a href="#" class="nav-item">Converter</a>
+        
             <button class="dark-toggle">🌙</button>
         </nav>
 
