@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='programmer.css') }}">
+    <title>Programmer — CALCULATRICE</title>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===== PARTIE GAUCHE ===== -->
+    <div class="calc-side">
+
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <button class="hamburger">☰</button>
+            <a href="/" class="nav-item">Standard</a>
+            <a href="/templates/index.html" class="nav-item">Scientific</a>
+            <a href="/graph" class="nav-item">Graph</a>
+            <a href="/programmer" class="nav-item active">Programmer</a>
+            <a href="#" class="nav-item">Converter</a>
+            <button class="dark-toggle">🌙</button>
+        </nav>
+
+        <!-- DISPLAY PROGRAMMER -->
+        <div class="prog-display">
+            <div class="prog-bases">
+                <div class="base-row" id="row-hex">
+                    <span class="base-label">HEX</span>
+                    <span class="base-value" id="val-hex">0</span>
+                </div>
+                <div class="base-row active" id="row-dec">
+                    <span class="base-label">DEC</span>
+                    <span class="base-value" id="val-dec">0</span>
+                </div>
+                <div class="base-row" id="row-oct">
+                    <span class="base-label">OCT</span>
+                    <span class="base-value" id="val-oct">0</span>
+                </div>
+                <div class="base-row" id="row-bin">
+                    <span class="base-label">BIN</span>
+                    <span class="base-value" id="val-bin">0</span>
+                </div>
+            </div>
+            <!-- bits visualizer -->
+            <div class="bits-display" id="bitsDisplay"></div>
+        </div>
+
+        <!-- SÉLECTEUR DE BASE -->
+        <div class="base-selector">
+            <button class="base-btn active" data-base="DEC">DEC</button>
+            <button class="base-btn" data-base="HEX">HEX</button>
+            <button class="base-btn" data-base="OCT">OCT</button>
+            <button class="base-btn" data-base="BIN">BIN</button>
+            <div class="wordsize-selector">
+                <button class="ws-btn active" data-bits="32">32</button>
+                <button class="ws-btn" data-bits="16">16</button>
+                <button class="ws-btn" data-bits="8">8</button>
+            </div>
+        </div>
+
+        <!-- GRILLE DE BOUTONS -->
+        <div class="btn prog-btn-grid">
+
+            <!-- ligne 1 : opérations bit à bit -->
+            <button class="btn-bitop">AND</button>
+            <button class="btn-bitop">OR</button>
+            <button class="btn-bitop">XOR</button>
+            <button class="btn-bitop">NOT</button>
+            <button class="btn-bitop">LSH</button>
+            <button class="btn-bitop">RSH</button>
+            <button class="btn-clear-ce">CE</button>
+            <button class="btn-clear">⌫</button>
+
+            <!-- ligne 2 -->
+            <button class="btn-bitop">NAND</button>
+            <button class="btn-bitop">NOR</button>
+            <button class="btn-bitop">XNOR</button>
+            <button class="btn-paren">(</button>
+            <button class="btn-paren">)</button>
+            <button class="btn-op">%</button>
+            <button class="btn-clear">C</button>
+            <button class="btn-op">÷</button>
+
+            <!-- ligne 3 : hex A-F + chiffres -->
+            <button class="btn-hex" id="btnA">A</button>
+            <button class="btn-hex" id="btnB">B</button>
+            <button class="btn-hex" id="btnC">C</button>
+            <button class="btn-hex" id="btnD">D</button>
+            <button class="btn-num">7</button>
+            <button class="btn-num">8</button>
+            <button class="btn-num">9</button>
+            <button class="btn-op">×</button>
+
+            <!-- ligne 4 -->
+            <button class="btn-hex" id="btnE">E</button>
+            <button class="btn-hex" id="btnF">F</button>
+            <button class="btn-bitop">RoL</button>
+            <button class="btn-bitop">RoR</button>
+            <button class="btn-num">4</button>
+            <button class="btn-num">5</button>
+            <button class="btn-num">6</button>
+            <button class="btn-op">−</button>
+
+            <!-- ligne 5 -->
+            <button class="btn-bitop">2's</button>
+            <button class="btn-bitop">1's</button>
+            <button class="btn-bitop">MS</button>
+            <button class="btn-bitop">MR</button>
+            <button class="btn-num">1</button>
+            <button class="btn-num">2</button>
+            <button class="btn-num">3</button>
+            <button class="btn-op">+</button>
+
+            <!-- ligne 6 -->
+            <button class="btn-bitop">±</button>
+            <button class="btn-bitop">MOD</button>
+            <button class="btn-bitop">DIV</button>
+            <button class="btn-bitop">ABS</button>
+            <button class="btn-op">±</button>
+            <button class="btn-num">0</button>
+            <button class="btn-num">.</button>
+            <button class="btn-equal">=</button>
+        </div>
+    </div>
+
+    <!-- ===== SIDEBAR DROITE ===== -->
+    <aside class="sidebar-right">
+        <div class="history-tabs">
+            <button class="tab active">History</button>
+            <button class="tab">Archive</button>
+            <button class="tab-icon">💾</button>
+        </div>
+
+        <div class="history-list" id="historyList">
+            <div class="history-empty">Aucun calcul pour l'instant</div>
+        </div>
+
+        <div class="history-footer">
+            <span>Save History</span>
+            <button title="Imprimer">🖨️</button>
+            <button title="Exporter">📤</button>
+            <button title="Vider" id="clearHistory">🗑️</button>
+        </div>
+    </aside>
+</div>
+
+<script src="{{ url_for('static', filename='programmer.js') }}"></script>
+</body>
+</html>

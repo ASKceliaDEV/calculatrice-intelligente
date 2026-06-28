@@ -10,6 +10,8 @@ def home():
 @app.route("/graph")#utilisateur accède à la page graph de l'application en visitant l'URL "/graph.html".
 def graph():
     return render_template("graph.html")
-
+@app.route("/programmer")
+def programmer():
+    return render_template("programmer.html")
 if __name__ == "__main__":
     app.run(debug=True)
