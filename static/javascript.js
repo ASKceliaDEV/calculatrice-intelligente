@@ -53,13 +53,16 @@ function factorielle(n) {
   }
   return resultat;
 }
+// ===== UTILITAIRES =====
 function versRadians(valeur) {
-  if (modeDeg) {
-    //si je suis en mode degre il faut le convertire en radian
-    return valeur * (Math.PI / 180);
-  }
-  return valeur; //deja en mode radian
+  return modeDeg ? valeur * (Math.PI / 180) : valeur;
 }
+function versAffichage(radians) {
+  // Résultat d'une fonction inverse : Math retourne toujours des radians
+  // Si on est en Deg, on convertit pour afficher en degrés
+  return modeDeg ? radians * (180 / Math.PI) : radians;
+}
+// ===== FONCTIONS DIRECTES (mode normal) =====
 function sinFonction() {
   display.value = Math.sin(versRadians(Number(display.value)));
   resultatAffiche = true;
@@ -69,46 +72,38 @@ function cosFonction() {
   resultatAffiche = true;
 }
 function tanFonction() {
-  //tan(90°) et tan(π/2) sont indéfinis, donc on affiche "erreur" dans ces cas
-  if (modeDeg && Number(display.value) % 180 === 90) {
-    display.value = "erreur";
-  } else if (!modeDeg && Number(display.value) % Math.PI === Math.PI / 2) {
+  let angle = versRadians(Number(display.value));
+  // cos(angle) ≈ 0 → tan indéfini
+  if (Math.abs(Math.cos(angle)) < 1e-10) {
     display.value = "erreur";
   } else {
-    display.value = Math.tan(versRadians(Number(display.value)));
+    display.value = Math.tan(angle);
   }
+  resultatAffiche = true;
+}
+// ===== FONCTIONS INVERSES (mode 2nd) =====
+function sinInverseFonction() {
+  let x = Number(display.value);
+  if (x < -1 || x > 1) {           // arcsin défini sur [-1, 1] seulement
+    display.value = "erreur";
+  } else {
+    display.value = versAffichage(Math.asin(x));
+  }
+  resultatAffiche = true;
 }
 function cosInverseFonction() {
   let x = Number(display.value);
-  if (x < -1 || x > 1) {
+  if (x < -1 || x > 1) {           // arccos défini sur [-1, 1] seulement
     display.value = "erreur";
-    return;
   } else {
-    display.value = Math.acos(x);
-    resultatAffiche = true;
+    display.value = versAffichage(Math.acos(x));
   }
-}
-function sinInverseFonction() {
-  let x = Number(display.value);
-  if (x < -1 || x > 1) {
-    display.value = "erreur";
-    return;
-  } else {
-    display.value = Math.asin(x);
-    resultatAffiche = true;
-  }
+  resultatAffiche = true;
 }
 function tanInverseFonction() {
-  let x = Number(display.value);
-  let result = Math.atan(x);
-  if (x < -1 || x > 1) {
-    display.value = "erreur";
-    return;
-  } else {
-    //si on est en mode degre on convertit le resultat en degre
-    display.value = modeDeg ? Math.atan(x) * (180 / Math.PI) : result;
-    resultatAffiche = true;
-  }
+  let x = Number(display.value);    // arctan défini pour TOUS les réels ✓
+  display.value = versAffichage(Math.atan(x));
+  resultatAffiche = true;
 }
 
 const buttons = document.querySelectorAll(".btn button");
@@ -254,8 +249,29 @@ buttons.forEach(function (button) {
       // boutons pour demain
       case "2nd":
         secondMode = !secondMode;
-        break; // bascule entre les fonctions principales et secondaires
-      case "mr":
+        // Feedback visuel : changer la couleur du bouton 2nd
+        button.style.background = secondMode
+          ? "rgba(244,114,182,0.4)"   // rose vif = activé
+          : ""; // retour normal
+          document.querySelectorAll("[data-second]").forEach(btn => {    
+            if (secondMode) {
+              btn.dataset.original = btn.textContent;  // sauvegarde "sin"
+              btn.textContent = btn.dataset.second;    // affiche "sin⁻¹"
+            } else {
+                btn.textContent = btn.dataset.original;  // remet "sin"
+            }
+          });                   
+          break;
+      case "sin":
+        secondMode ? sinInverseFonction() : sinFonction();
+        break;
+      case "cos":
+        secondMode ? cosInverseFonction() : cosFonction();
+        break;
+      case "tan":
+        secondMode ? tanInverseFonction() : tanFonction();
+        break;
+            case "mr":
       case "m+":
       case "mc":
       case "sin":
