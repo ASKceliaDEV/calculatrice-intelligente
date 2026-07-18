@@ -200,6 +200,7 @@
     font-size: 16px;
     cursor: pointer;
     transition: all 0.2s;
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -218,6 +219,7 @@
     position: absolute;
     pointer-events: none;
     background: rgba(26,17,40,0.92);
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     border: 1px solid var(--border);
     border-radius: 10px;
