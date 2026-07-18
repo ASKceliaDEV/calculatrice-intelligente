@@ -14,8 +14,8 @@
 ---
 
 ## 📸 Aperçu
-
-![Scientific](images/interface.jpg)
+![standard](images/standard.png)
+![Scientific](images/scientifique.png)
 ![Graph](images/graph.png)
 ![Programmer](images/programmer.png)
 
