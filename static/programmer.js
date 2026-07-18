@@ -6,7 +6,7 @@ let inputBuffer = "";      // ce que l'utilisateur tape
 let pendingOp = null;      // opération en attente
 let firstOperand = null;   // premier opérande
 let memStore = 0;          // mémoire MS/MR
-let history = [];          // historique
+// historique géré par HistoryManager (history.js)
 
 // ===== INITIALISATION =====
 document.addEventListener("DOMContentLoaded", () => {
@@ -88,7 +88,7 @@ function updateBitsDisplay(v) {
 
 function toggleBit(i) {
     currentValue ^= (1 << i);
-    inputBuffer = String(applyWordMask(currentValue));
+    inputBuffer = valueToInput(currentValue);
     updateDisplay();
 }
 
@@ -113,6 +113,16 @@ function appendDigit(d) {
 
 function baseRadix() {
     return { DEC: 10, HEX: 16, OCT: 8, BIN: 2 }[currentBase];
+}
+
+function valueToInput(v) {
+    return applyWordMask(v).toString(baseRadix()).toUpperCase();
+}
+
+function clearEntry() {
+    currentValue = 0;
+    inputBuffer = "";
+    updateDisplay();
 }
 
 function clearAll() {
@@ -143,6 +153,9 @@ function applyArith(op) {
 function evalArith(a, op, b) {
     a = applyWordMask(a);
     b = applyWordMask(b);
+
+    if (binaryBitOps.includes(op)) return evalBitOp2(a, op, b);
+
     switch (op) {
         case "+":   return applyWordMask(a + b);
         case "−":   return applyWordMask(a - b);
@@ -161,10 +174,192 @@ function calculateEquals() {
     addHistory(expr, formatDec(applyWordMask(currentValue)));
     pendingOp = null;
     firstOperand = null;
-    inputBuffer = String(applyWordMask(currentValue));
+    inputBuffer = valueToInput(currentValue);
     updateDisplay();
 }
 
+// Opérations binaires avec 2 opérandes (AND, OR, XOR...)
+const binaryBitOps = ["AND", "OR", "XOR", "NAND", "NOR", "XNOR"];
+
+function evalBitOp2(a, op, b) {
+    switch (op) {
+        case "AND":  return applyWordMask(a & b);
+        case "OR":   return applyWordMask(a | b);
+        case "XOR":  return applyWordMask(a ^ b);
+        case "NAND": return applyWordMask(~(a & b));
+        case "NOR":  return applyWordMask(~(a | b));
+        case "XNOR": return applyWordMask(~(a ^ b));
+        default:     return b;
+    }
+}
+
+// ===== CHANGEMENT DE BASE =====
+function setBase(base) {
+    currentBase = base;
+    inputBuffer = applyWordMask(currentValue).toString(baseRadix()).toUpperCase();
+
+    // activer le bon bouton
+    document.querySelectorAll(".base-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.base === base);
+    });
+
+    // activer la bonne ligne display
+    ["DEC","HEX","OCT","BIN"].forEach(b => {
+        document.getElementById("row-" + b.toLowerCase())
+            .classList.toggle("active", b === base);
+    });
+
+    updateHexButtons();
+    updateDisplay();
+}
+
+function updateHexButtons() {
+    const hexOnly = ["A","B","C","D","E","F"];
+    hexOnly.forEach(c => {
+        const el = document.getElementById("btn" + c);
+        if (el) el.disabled = currentBase !== "HEX";
+    });
+
+    // désactiver 2-9 en BIN
+    document.querySelectorAll(".btn-num").forEach(b => {
+        const d = parseInt(b.textContent);
+        if (currentBase === "BIN") b.disabled = d > 1;
+        else if (currentBase === "OCT") b.disabled = d > 7;
+        else b.disabled = false;
+    });
+}
+
+// ===== HISTORIQUE =====
+function addHistory(expr, result) {
+    if (typeof HistoryManager !== 'undefined') {
+        HistoryManager.addHistory(expr, result);
+    }
+}
+
+function restoreFromHistory(val) {
+    currentValue = parseInt(val) || 0;
+    inputBuffer = valueToInput(currentValue);
+    updateDisplay();
+}
+
+// ===== CLAVIER =====
+document.addEventListener("keydown", (e) => {
+    const key = e.key;
+
+    if (/^[0-9A-Fa-f]$/.test(key)) {
+        appendDigit(key.toUpperCase());
+        e.preventDefault();
+        return;
+    }
+
+    const keyMap = {
+        "Enter": "=",
+        "Backspace": "⌫",
+        "Delete": "C",
+        "Escape": "C",
+        "+": "+",
+        "-": "−",
+        "*": "×",
+        "/": "÷",
+        "%": "%",
+        "(": "(",
+        ")": ")",
+        ".": ".",
+    };
+
+    const mapped = keyMap[key];
+    if (mapped) {
+        // Click the matching button if it exists
+        const btn = [...document.querySelectorAll(".btn button")]
+            .find(b => b.textContent.trim() === mapped);
+        if (btn) { btn.click(); e.preventDefault(); }
+    }
+});
+
+// ===== BINDINGS =====
+function bindButtons() {
+    document.querySelectorAll(".btn button").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const v = btn.textContent.trim();
+
+            // chiffres et hex
+            if (/^[0-9A-F]$/.test(v)) { appendDigit(v); return; }
+
+            switch (v) {
+                case "C":    clearAll(); break;
+                case "CE":   clearEntry(); break;
+                case "⌫":   backspace(); break;
+                case "=":    calculateEquals(); break;
+                case "+":
+                case "−":
+                case "×":
+                case "÷":
+                case "MOD":
+                case "DIV":  applyArith(v); break;
+                case "%":
+                    currentValue = applyWordMask(Math.floor(currentValue / 100));
+                    inputBuffer = valueToInput(currentValue);
+                    updateDisplay();
+                    break;
+                case "±":
+                    currentValue = applyWordMask(-currentValue);
+                    inputBuffer = valueToInput(currentValue);
+                    updateDisplay();
+                    break;
+                case ".": break; // pas de décimaux en mode programmer
+                case "(":
+                case ")": break;
+                case "MS": memStore = currentValue; break;
+                case "MR":
+                    currentValue = memStore;
+                    inputBuffer = valueToInput(memStore);
+                    updateDisplay();
+                    break;
+                default:
+                    // opérations bit à bit
+                    if (["AND","OR","XOR","NOT","LSH","RSH","NAND","NOR","XNOR","RoL","RoR","2's","1's","ABS"].includes(v)) {
+                        if (binaryBitOps.includes(v)) {
+                            applyArith(v);
+                        } else {
+                            applyBitOp(v);
+                        }
+                    }
+            }
+        });
+    });
+}
+
+function bindBaseRows() {
+    ["dec","hex","oct","bin"].forEach(b => {
+        document.getElementById("row-" + b).addEventListener("click", () => {
+            setBase(b.toUpperCase());
+        });
+    });
+}
+
+function bindBaseBtns() {
+    document.querySelectorAll(".base-btn").forEach(btn => {
+        btn.addEventListener("click", () => setBase(btn.dataset.base));
+    });
+}
+
+function bindWordSize() {
+    document.querySelectorAll(".ws-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            wordBits = parseInt(btn.dataset.bits);
+            document.querySelectorAll(".ws-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentValue = applyWordMask(currentValue);
+            inputBuffer = valueToInput(currentValue);
+            buildBitsDisplay();
+            updateDisplay();
+        });
+    });
+}
+
+function bindHistory() {
+    // Les boutons du footer sont gérés par HistoryManager
+}
 // ===== OPÉRATIONS BIT À BIT =====
 function applyBitOp(op) {
     const a = applyWordMask(currentValue);
@@ -221,178 +416,6 @@ function applyBitOp(op) {
 
     addHistory(expr, formatDec(result));
     currentValue = result;
-    inputBuffer = String(result);
+    inputBuffer = valueToInput(result);
     updateDisplay();
-}
-
-// Opérations binaires avec 2 opérandes (AND, OR, XOR...)
-const binaryBitOps = ["AND", "OR", "XOR", "NAND", "NOR", "XNOR"];
-
-function evalBitOp2(a, op, b) {
-    switch (op) {
-        case "AND":  return applyWordMask(a & b);
-        case "OR":   return applyWordMask(a | b);
-        case "XOR":  return applyWordMask(a ^ b);
-        case "NAND": return applyWordMask(~(a & b));
-        case "NOR":  return applyWordMask(~(a | b));
-        case "XNOR": return applyWordMask(~(a ^ b));
-        default:     return b;
-    }
-}
-
-// Surcharge evalArith pour bit ops à 2 opérandes
-const _evalArith = evalArith;
-function evalArith(a, op, b) {
-    if (binaryBitOps.includes(op)) return evalBitOp2(a, op, b);
-    return _evalArith(a, op, b);
-}
-
-// ===== CHANGEMENT DE BASE =====
-function setBase(base) {
-    currentBase = base;
-    inputBuffer = applyWordMask(currentValue).toString(baseRadix()).toUpperCase();
-
-    // activer le bon bouton
-    document.querySelectorAll(".base-btn").forEach(b => {
-        b.classList.toggle("active", b.dataset.base === base);
-    });
-
-    // activer la bonne ligne display
-    ["DEC","HEX","OCT","BIN"].forEach(b => {
-        document.getElementById("row-" + b.toLowerCase())
-            .classList.toggle("active", b === base);
-    });
-
-    updateHexButtons();
-    updateDisplay();
-}
-
-function updateHexButtons() {
-    const hexOnly = ["A","B","C","D","E","F"];
-    hexOnly.forEach(c => {
-        const el = document.getElementById("btn" + c);
-        if (el) el.disabled = currentBase !== "HEX";
-    });
-
-    // désactiver 2-9 en BIN
-    document.querySelectorAll(".btn-num").forEach(b => {
-        const d = parseInt(b.textContent);
-        if (currentBase === "BIN") b.disabled = d > 1;
-        else if (currentBase === "OCT") b.disabled = d > 7;
-        else b.disabled = false;
-    });
-}
-
-// ===== HISTORIQUE =====
-function addHistory(expr, result) {
-    history.unshift({ expr, result });
-    renderHistory();
-}
-
-function renderHistory() {
-    const list = document.getElementById("historyList");
-    if (history.length === 0) {
-        list.innerHTML = '<div class="history-empty">Aucun calcul pour l\'instant</div>';
-        return;
-    }
-    list.innerHTML = history.map(h => `
-        <div class="history-item" onclick="restoreFromHistory(${parseInt(h.result) || 0})">
-            <div class="history-expression">${h.expr} =</div>
-            <div class="history-result prog">${h.result}</div>
-        </div>
-    `).join("");
-}
-
-function restoreFromHistory(val) {
-    currentValue = val;
-    inputBuffer = String(val);
-    updateDisplay();
-}
-
-// ===== BINDINGS =====
-function bindButtons() {
-    document.querySelectorAll(".btn button").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const v = btn.textContent.trim();
-
-            // chiffres et hex
-            if (/^[0-9A-F]$/.test(v)) { appendDigit(v); return; }
-
-            switch (v) {
-                case "C":    clearAll(); break;
-                case "CE":
-                case "⌫":   backspace(); break;
-                case "=":    calculateEquals(); break;
-                case "+":
-                case "−":
-                case "×":
-                case "÷":
-                case "MOD":
-                case "DIV":  applyArith(v); break;
-                case "%":
-                    currentValue = applyWordMask(Math.floor(currentValue / 100));
-                    inputBuffer = String(currentValue);
-                    updateDisplay();
-                    break;
-                case "±":
-                    currentValue = applyWordMask(-currentValue);
-                    inputBuffer = String(currentValue);
-                    updateDisplay();
-                    break;
-                case ".": break; // pas de décimaux en mode programmer
-                case "(":
-                case ")": break;
-                case "MS": memStore = currentValue; break;
-                case "MR":
-                    currentValue = memStore;
-                    inputBuffer = String(memStore);
-                    updateDisplay();
-                    break;
-                default:
-                    // opérations bit à bit
-                    if (["AND","OR","XOR","NOT","LSH","RSH","NAND","NOR","XNOR","RoL","RoR","2's","1's","ABS"].includes(v)) {
-                        if (binaryBitOps.includes(v)) {
-                            applyArith(v);
-                        } else {
-                            applyBitOp(v);
-                        }
-                    }
-            }
-        });
-    });
-}
-
-function bindBaseRows() {
-    ["dec","hex","oct","bin"].forEach(b => {
-        document.getElementById("row-" + b).addEventListener("click", () => {
-            setBase(b.toUpperCase());
-        });
-    });
-}
-
-function bindBaseBtns() {
-    document.querySelectorAll(".base-btn").forEach(btn => {
-        btn.addEventListener("click", () => setBase(btn.dataset.base));
-    });
-}
-
-function bindWordSize() {
-    document.querySelectorAll(".ws-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            wordBits = parseInt(btn.dataset.bits);
-            document.querySelectorAll(".ws-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            currentValue = applyWordMask(currentValue);
-            inputBuffer = String(currentValue);
-            buildBitsDisplay();
-            updateDisplay();
-        });
-    });
-}
-
-function bindHistory() {
-    document.getElementById("clearHistory").addEventListener("click", () => {
-        history = [];
-        renderHistory();
-    });
 }

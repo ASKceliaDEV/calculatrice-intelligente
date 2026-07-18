@@ -22,7 +22,11 @@
             <a href="/graph" class="nav-item">Graph</a>
             <a href="/programmer" class="nav-item active">Programmer</a>
             <a href="#" class="nav-item">Converter</a>
-            <button class="dark-toggle">🌙</button>
+            <div class="theme-switch" id="themeToggle" role="button" tabindex="0" title="Mode clair/sombre">
+                <div class="theme-switch-track">
+                    <div class="theme-switch-knob"></div>
+                </div>
+            </div>
         </nav>
 
         <!-- DISPLAY PROGRAMMER -->
@@ -135,18 +139,20 @@
             <button class="tab-icon">💾</button>
         </div>
 
-        <div class="history-list" id="historyList">
-            <div class="history-empty">Aucun calcul pour l'instant</div>
-        </div>
+        <div class="history-list" id="historyList"></div>
+
+        <div class="history-list" id="archiveList" style="display:none;"></div>
 
         <div class="history-footer">
-            <span>Save History</span>
-            <button title="Imprimer">🖨️</button>
-            <button title="Exporter">📤</button>
-            <button title="Vider" id="clearHistory">🗑️</button>
+            <span id="saveHistoryToggle">Save History</span>
+            <button id="printHistory" title="Imprimer">🖨️</button>
+            <button id="exportHistory" title="Exporter">📤</button>
+            <button id="clearHistoryBtn" title="Vider">🗑️</button>
         </div>
     </aside>
 </div>
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+<script src="{{ url_for('static', filename='history.js') }}"></script>
 <script src="{{ url_for('static', filename='programmer.js') }}"></script>
 
 </body>

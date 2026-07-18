@@ -19,7 +19,7 @@
         <nav class="navbar">
             <button class="hamburger">☰</button>
         
-            <a href="#" class="nav-item">Standard</a>
+            <a href="{{ url_for('standard') }}" class="nav-item">Standard</a>
         
             <a href="{{ url_for('home') }}" class="nav-item active">Scientific</a>
         
@@ -29,7 +29,11 @@
         
             <a href="#" class="nav-item">Converter</a>
         
-            <button class="dark-toggle">🌙</button>
+            <div class="theme-switch" id="themeToggle" role="button" tabindex="0" title="Mode clair/sombre">
+                <div class="theme-switch-track">
+                    <div class="theme-switch-knob"></div>
+                </div>
+            </div>
         </nav>
 
         <!-- DISPLAY -->
@@ -127,51 +131,29 @@
     <!-- ===== PARTIE DROITE : historique ===== -->
     <aside class="sidebar-right">
 
-        <!-- tabs -->
         <div class="history-tabs">
             <button class="tab active">History</button>
             <button class="tab">Archive</button>
             <button class="tab-icon">💾</button>
         </div>
 
-        <!-- liste des calculs -->
-        <div class="history-list" id="historyList">
+        <div class="history-list" id="historyList"></div>
 
-            <!-- chaque entrée ressemble à ça : -->
-            <div class="history-item">
-                <div class="history-expression">(256 + 123) × (845÷25) =</div>
-                <div class="history-result">12,810.2</div>
-            </div>
+        <div class="history-list" id="archiveList" style="display:none;"></div>
 
-            <div class="history-item">
-                <div class="history-expression">sin(4 * 256) + (π * (ln(1)) =</div>
-                <div class="history-result">−0.82903757256</div>
-            </div>
-
-            <div class="history-item">
-                <div class="history-expression">(256 + 123) × 6 =</div>
-                <div class="history-result">2,274</div>
-            </div>
-
-            <div class="history-item">
-                <div class="history-expression">tan(45) + cos(90) =</div>
-                <div class="history-result">1</div>
-            </div>
-
-        </div>
-
-        <!-- footer historique -->
         <div class="history-footer">
-            <span>Save History</span>
-            <button>🖨️</button>
-            <button>📤</button>
-            <button>🗑️</button>
+            <span id="saveHistoryToggle">Save History</span>
+            <button id="printHistory" title="Imprimer">🖨️</button>
+            <button id="exportHistory" title="Exporter">📤</button>
+            <button id="clearHistoryBtn" title="Vider">🗑️</button>
         </div>
 
     </aside>
 
 </div>
 <!--ajouter le javascrit relie avec flask-->
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+<script src="{{ url_for('static', filename='history.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript.js') }}"></script>
 </body>
 </html>

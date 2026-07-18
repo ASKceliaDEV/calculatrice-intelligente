@@ -3,9 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>graphique</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='graph.css') }}">
+    <title>Graphique — CALCULATRICE</title>
 </head>
 <body>
-    
+
+<div class="app graph-app">
+
+    <nav class="navbar">
+        <button class="hamburger">☰</button>
+        <a href="{{ url_for('standard') }}" class="nav-item">Standard</a>
+        <a href="{{ url_for('home') }}" class="nav-item">Scientific</a>
+        <a href="{{ url_for('graph') }}" class="nav-item active">Graph</a>
+        <a href="{{ url_for('programmer') }}" class="nav-item">Programmer</a>
+        <a href="#" class="nav-item">Converter</a>
+        <div class="theme-switch" id="themeToggle" role="button" tabindex="0" title="Mode clair/sombre">
+            <div class="theme-switch-track">
+                <div class="theme-switch-knob"></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="graph-body">
+
+        <!-- ===== COLONNE GAUCHE : LISTE FONCTIONS ===== -->
+        <aside class="graph-sidebar" id="graphSidebar">
+
+            <div class="graph-sidebar-header">
+                <div class="graph-sidebar-tools">
+                    <button id="graphUndo" title="Annuler">↶</button>
+                    <button id="graphRedo" title="Rétablir">↷</button>
+                    <button id="graphSettings" title="Paramètres">⚙</button>
+                </div>
+                <button id="graphCollapse" title="Réduire">«</button>
+            </div>
+
+            <div class="graph-sidebar-list" id="graphSidebarList">
+                <div class="graph-sidebar-empty">Ajoutez une fonction</div>
+            </div>
+
+            <button class="graph-sidebar-add" id="graphAddBtn">+</button>
+
+        </aside>
+
+        <!-- ===== ZONE CENTRALE : CANVAS + CLAVIER ===== -->
+        <div class="graph-main">
+
+            <div class="graph-canvas-wrap" id="graphCanvasWrap">
+                <canvas id="graphCanvas"></canvas>
+
+                <div class="graph-zoom-floating">
+                    <button id="graphZoomIn" title="Zoom avant">+</button>
+                    <button id="graphZoomOut" title="Zoom arrière">−</button>
+                </div>
+
+                <div id="graphTooltip"></div>
+            </div>
+
+            <!-- ===== CLAVIER MATHÉMATIQUE ===== -->
+            <div class="graph-keyboard" id="graphKeyboard">
+
+                <div class="key-group">
+                    <button class="key-btn" data-insert="x">x</button>
+                    <button class="key-btn" data-insert="y">y</button>
+                    <button class="key-btn" data-insert="^2">x²</button>
+                    <button class="key-btn" data-insert="^">x^y</button>
+                </div>
+
+                <div class="key-divider"></div>
+
+                <div class="key-group">
+                    <button class="key-btn" data-insert="(">(</button>
+                    <button class="key-btn" data-insert=")">)</button>
+                    <button class="key-btn" data-insert="<">&lt;</button>
+                    <button class="key-btn" data-insert=">">&gt;</button>
+                </div>
+
+                <div class="key-divider"></div>
+
+                <div class="key-group">
+                    <button class="key-btn" data-insert="abs(">|a|</button>
+                    <button class="key-btn" data-insert=",">,</button>
+                    <button class="key-btn" data-insert="≤">≤</button>
+                    <button class="key-btn" data-insert="≥">≥</button>
+                </div>
+
+                <div class="key-divider"></div>
+
+                <div class="key-group">
+                    <button class="key-btn" id="keyAbc">ABC</button>
+                    <button class="key-btn" id="keyAudio">🔊</button>
+                    <button class="key-btn" data-insert="sqrt(">√</button>
+                    <button class="key-btn" data-insert="π">π</button>
+                </div>
+
+                <div class="key-divider"></div>
+
+                <div class="key-group key-group-funcs">
+                    <div class="key-dropdown">
+                        <button class="key-btn key-dropdown-toggle" id="keyFuncsToggle">fonctions ▾</button>
+                        <div class="key-dropdown-menu" id="keyFuncsMenu">
+                            <button class="key-dd-item" data-insert="sin(">sin</button>
+                            <button class="key-dd-item" data-insert="cos(">cos</button>
+                            <button class="key-dd-item" data-insert="tan(">tan</button>
+                            <button class="key-dd-item" data-insert="log(">log</button>
+                            <button class="key-dd-item" data-insert="ln(">ln</button>
+                            <button class="key-dd-item" data-insert="sqrt(">sqrt</button>
+                            <button class="key-dd-item" data-insert="abs(">abs</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-divider"></div>
+
+                <div class="key-group key-group-numpad" id="keyNumpad">
+                    <button class="key-btn" data-insert="7">7</button>
+                    <button class="key-btn" data-insert="8">8</button>
+                    <button class="key-btn" data-insert="9">9</button>
+                    <button class="key-btn key-op" data-insert="÷">÷</button>
+                    <button class="key-btn" data-insert="4">4</button>
+                    <button class="key-btn" data-insert="5">5</button>
+                    <button class="key-btn" data-insert="6">6</button>
+                    <button class="key-btn key-op" data-insert="×">×</button>
+                    <button class="key-btn" data-insert="1">1</button>
+                    <button class="key-btn" data-insert="2">2</button>
+                    <button class="key-btn" data-insert="3">3</button>
+                    <button class="key-btn key-op" data-insert="−">−</button>
+                    <button class="key-btn" data-insert="0">0</button>
+                    <button class="key-btn" data-insert=".">.</button>
+                    <button class="key-btn key-op" data-insert="=">=</button>
+                    <button class="key-btn key-op" data-insert="+">+</button>
+                </div>
+
+                <div class="key-divider"></div>
+
+                <div class="key-group key-group-actions">
+                    <button class="key-btn" id="keyArrowLeft" title="Gauche">←</button>
+                    <button class="key-btn" id="keyArrowRight" title="Droite">→</button>
+                    <button class="key-btn key-clear" id="keyBackspace" title="Supprimer">⌫</button>
+                    <button class="key-btn key-enter" id="keyEnter" title="Valider">↵</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.2.1/math.min.js"></script>
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+<script src="{{ url_for('static', filename='history.js') }}"></script>
+<script src="{{ url_for('static', filename='graph.js') }}"></script>
 </body>
 </html>

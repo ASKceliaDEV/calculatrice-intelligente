@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>CALCULATRICE STANDARD</title>
+</head>
+<body>
+
+<div class="app">
+
+    <div class="calc-side">
+
+        <nav class="navbar">
+            <button class="hamburger">☰</button>
+        
+            <a href="{{ url_for('standard') }}" class="nav-item active">Standard</a>
+            <a href="{{ url_for('home') }}" class="nav-item">Scientific</a>
+            <a href="{{ url_for('graph') }}" class="nav-item">Graph</a>
+            <a href="{{ url_for('programmer') }}" class="nav-item">Programmer</a>
+            <a href="#" class="nav-item">Converter</a>
+        
+            <div class="theme-switch" id="themeToggle" role="button" tabindex="0" title="Mode clair/sombre">
+                <div class="theme-switch-track">
+                    <div class="theme-switch-knob"></div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="display-wrapper">
+            <div class="expression" id="expression"></div>
+            <input type="text" id="display" readonly placeholder="0">
+        </div>
+
+        <div class="btn">
+
+            <button class="btn-clear-ce" style="grid-column: span 2;">CE</button>
+            <button class="btn-clear" style="grid-column: span 2;">C</button>
+            <button class="btn-clear" style="grid-column: span 2;">⌫</button>
+            <button class="btn-op" style="grid-column: span 2;">%</button>
+
+            <button class="btn-num" style="grid-column: span 2;">7</button>
+            <button class="btn-num" style="grid-column: span 2;">8</button>
+            <button class="btn-num" style="grid-column: span 2;">9</button>
+            <button class="btn-op" style="grid-column: span 2;">÷</button>
+
+            <button class="btn-num" style="grid-column: span 2;">4</button>
+            <button class="btn-num" style="grid-column: span 2;">5</button>
+            <button class="btn-num" style="grid-column: span 2;">6</button>
+            <button class="btn-op" style="grid-column: span 2;">*</button>
+
+            <button class="btn-num" style="grid-column: span 2;">1</button>
+            <button class="btn-num" style="grid-column: span 2;">2</button>
+            <button class="btn-num" style="grid-column: span 2;">3</button>
+            <button class="btn-op" style="grid-column: span 2;">−</button>
+
+            <button class="btn-op" style="grid-column: span 2;">±</button>
+            <button class="btn-num" style="grid-column: span 2;">0</button>
+            <button class="btn-num" style="grid-column: span 2;">.</button>
+            <button class="btn-op" style="grid-column: span 2;">+</button>
+
+            <button class="btn-equal" style="grid-column: span 8;">=</button>
+
+        </div>
+    </div>
+
+    <aside class="sidebar-right">
+
+        <div class="history-tabs">
+            <button class="tab active">History</button>
+            <button class="tab">Archive</button>
+            <button class="tab-icon">💾</button>
+        </div>
+
+        <div class="history-list" id="historyList"></div>
+
+        <div class="history-list" id="archiveList" style="display:none;"></div>
+
+        <div class="history-footer">
+            <span id="saveHistoryToggle">Save History</span>
+            <button id="printHistory" title="Imprimer">🖨️</button>
+            <button id="exportHistory" title="Exporter">📤</button>
+            <button id="clearHistoryBtn" title="Vider">🗑️</button>
+        </div>
+
+    </aside>
+
+</div>
+
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+<script src="{{ url_for('static', filename='history.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript.js') }}"></script>
+</body>
+</html>

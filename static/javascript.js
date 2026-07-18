@@ -81,12 +81,16 @@ function effacer() {
 }
 
 function calculer() {
-  let expression = display.value
+  let expr = display.value;
+  let evalExpr = expr
     .replace(/×/g, "*")
     .replace(/÷/g, "/")
     .replace(/−/g, "-");
   try {
-    display.value = eval(expression);
+    let result = eval(evalExpr);
+    display.value = result;
+    dernierResultat = Number(result);
+    HistoryManager.addHistory(expr, result);
   } catch {
     display.value = "erreur";
   }
@@ -208,8 +212,11 @@ buttons.forEach(function(button) {
       case "=":
         resultatAffiche = true;
         if (operation === "pow") {
+          let expr = `${premierNombre} ^ ${display.value}`;
           display.value = Math.pow(premierNombre, Number(display.value));
+          dernierResultat = Number(display.value);
           operation = "";
+          HistoryManager.addHistory(expr, display.value);
         } else {
           calculer();
         }
@@ -234,68 +241,96 @@ buttons.forEach(function(button) {
         }
         break;
 
-      case "x²": 
-        power2(); 
+      case "x²": {
+        let expr = `(${display.value})²`;
+        power2();
         dernierResultat = Number(display.value);
-        resultatAffiche = true; 
+        resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
-      case "x³":
+      case "x³": {
+        let expr = `(${display.value})³`;
         display.value = Math.pow(Number(display.value), 3);
         dernierResultat = Number(display.value);
         resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
       case "xʸ": power(); break;
 
-      case "eˣ":
+      case "eˣ": {
+        let expr = `e^(${display.value})`;
         display.value = Math.exp(Number(display.value));
         dernierResultat = Number(display.value);
         resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
-      case "10ˣ":
+      case "10ˣ": {
+        let expr = `10^(${display.value})`;
         display.value = Math.pow(10, Number(display.value));
         dernierResultat = Number(display.value);
         resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
-      case "2ˣ":
+      case "2ˣ": {
+        let expr = `2^(${display.value})`;
         display.value = Math.pow(2, Number(display.value));
         dernierResultat = Number(display.value);
         resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
-      case "|x|":
+      case "|x|": {
+        let expr = `|${display.value}|`;
         display.value = Math.abs(Number(display.value));
         dernierResultat = Number(display.value);
         resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
-      case "√":
+      case "√": {
+        let expr = `√(${display.value})`;
         display.value = Math.sqrt(Number(display.value));
         dernierResultat = Number(display.value);
         resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
-      case "ln":
+      case "ln": {
+        let expr = `ln(${display.value})`;
         display.value = Number(display.value) <= 0
           ? "erreur"
           : Math.log(Number(display.value));
         dernierResultat = Number(display.value);
         resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
       case "log₁₀":
-      case "logₓ":
+      case "logₓ": {
+        let expr = `log₁₀(${display.value})`;
         display.value = Number(display.value) <= 0
           ? "erreur"
           : Math.log10(Number(display.value));
         dernierResultat = Number(display.value);
         resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
-      case "log꜀x":
+      case "log꜀x": {
+        let expr = `log_c(${display.value})`;
         const base = Number(prompt("Entrez la base du logarithme :"));
         if (isNaN(base) || base <= 0 || base === 1) {
           display.value = "erreur";
@@ -306,39 +341,71 @@ buttons.forEach(function(button) {
         }
         dernierResultat = Number(display.value);
         resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
-      case "x!":
+      case "x!": {
+        let expr = `(${display.value})!`;
         display.value = factorielle(display.value);
         dernierResultat = Number(display.value);
         resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
-      case "1/x":
+      case "1/x": {
+        let expr = `1/(${display.value})`;
         display.value = Number(display.value) === 0
           ? "erreur"
           : 1 / Number(display.value);
         dernierResultat = Number(display.value);
         resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
       case "2nd":
         toggleSecondMode(button);
         break;
 
-      case "sin":
+      case "sin": {
+        let expr = `${secondMode ? 'sin⁻¹' : 'sin'}(${display.value})`;
         secondMode ? sinInverseFonction() : sinFonction();
+        HistoryManager.addHistory(expr, display.value);
         break;
-      case "cos":
+      }
+      case "cos": {
+        let expr = `${secondMode ? 'cos⁻¹' : 'cos'}(${display.value})`;
         secondMode ? cosInverseFonction() : cosFonction();
+        HistoryManager.addHistory(expr, display.value);
         break;
-      case "tan":
+      }
+      case "tan": {
+        let expr = `${secondMode ? 'tan⁻¹' : 'tan'}(${display.value})`;
         secondMode ? tanInverseFonction() : tanFonction();
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
 
-      case "sin⁻¹": sinInverseFonction(); break;
-      case "cos⁻¹": cosInverseFonction(); break;
-      case "tan⁻¹": tanInverseFonction(); break;
+      case "sin⁻¹": {
+        let expr = `sin⁻¹(${display.value})`;
+        sinInverseFonction();
+        HistoryManager.addHistory(expr, display.value);
+        break;
+      }
+      case "cos⁻¹": {
+        let expr = `cos⁻¹(${display.value})`;
+        cosInverseFonction();
+        HistoryManager.addHistory(expr, display.value);
+        break;
+      }
+      case "tan⁻¹": {
+        let expr = `tan⁻¹(${display.value})`;
+        tanInverseFonction();
+        HistoryManager.addHistory(expr, display.value);
+        break;
+      }
       case "S⇔D":
         if (isNaN(dernierResultat)) break; // sécurité
         modeExact = !modeExact;
@@ -347,11 +414,14 @@ buttons.forEach(function(button) {
       case "mc":
         memoire = 0;
         break;
-      case "mr":
+      case "mr": {
+        let expr = `mr → ${memoire}`;
         display.value = memoire;
         dernierResultat = Number(display.value);
         resultatAffiche = true;
+        HistoryManager.addHistory(expr, display.value);
         break;
+      }
       case "m+":
         memoire += Number(display.value);
         break;
